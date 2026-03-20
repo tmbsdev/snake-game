@@ -8,44 +8,31 @@ interface GameControlsProps {
   onRestart: () => void;
 }
 
-export function GameControls({
-  status,
-  onStart,
-  onPause,
-  onResume,
-  onRestart,
-}: GameControlsProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function GameControls({ status, onStart, onPause, onResume, onRestart }: GameControlsProps) {
   return (
-    <div className="flex gap-3 mt-4">
-      {status === "IDLE" && (
-        <button
-          onClick={onStart}
-          className="px-6 py-2 bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold rounded-lg transition-colors"
-        >
-          Start
-        </button>
-      )}
+    <div className="flex gap-3 mt-2">
       {status === "PLAYING" && (
         <button
           onClick={onPause}
-          className="px-6 py-2 bg-gray-600 hover:bg-gray-500 text-white font-bold rounded-lg transition-colors"
+          className="px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors text-[10px] tracking-widest"
         >
-          Pause
+          PAUSE
         </button>
       )}
       {status === "PAUSED" && (
         <>
           <button
             onClick={onResume}
-            className="px-6 py-2 bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold rounded-lg transition-colors"
+            className="px-5 py-2 bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold rounded-lg transition-colors text-[10px] tracking-widest"
           >
-            Resume
+            RESUME
           </button>
           <button
             onClick={onRestart}
-            className="px-6 py-2 bg-gray-600 hover:bg-gray-500 text-white font-bold rounded-lg transition-colors"
+            className="px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors text-[10px] tracking-widest"
           >
-            Restart
+            RESTART
           </button>
         </>
       )}
