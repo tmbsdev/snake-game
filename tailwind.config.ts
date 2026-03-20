@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pixel: ["var(--font-pixel)", '"Press Start 2P"', "monospace"],
+        sans: ["var(--font-pixel)", '"Press Start 2P"', "monospace"],
+        mono: ["var(--font-pixel)", '"Press Start 2P"', "monospace"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

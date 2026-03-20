@@ -7,6 +7,7 @@ import { GameUI } from "@/components/GameUI";
 import { GameOver } from "@/components/GameOver";
 import { GameControls } from "@/components/GameControls";
 import { TouchTrail } from "@/components/TouchTrail";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { unlockAudio } from "@/lib/sounds";
 import pkg from "@/package.json";
 
@@ -20,11 +21,12 @@ export default function Home() {
       onPointerDown={unlockAudio}
     >
       <TouchTrail boardRef={boardRef} />
+      <InstallPrompt />
 
       {/* Header */}
       <div className="flex flex-col items-center gap-1 w-full max-w-[500px]">
         <div className="flex items-center justify-between w-full px-2">
-          <h1 className="text-base font-bold text-white tracking-widest">SNAKE</h1>
+          <h1 className="text-lg font-bold text-white tracking-widest">SNAKE</h1>
 
           {/* Wrap mode toggle — only visible in IDLE */}
           {state.status === "IDLE" && (
