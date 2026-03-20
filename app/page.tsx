@@ -12,7 +12,7 @@ import pkg from "@/package.json";
 
 export default function Home() {
   const boardRef = useRef<HTMLDivElement>(null);
-  const { state, start, pause, resume, restart } = useSnakeGame(boardRef);
+  const { state, start, pause, resume, restart, setMode } = useSnakeGame(boardRef);
 
   return (
     <main
@@ -21,11 +21,53 @@ export default function Home() {
     >
       <TouchTrail boardRef={boardRef} />
 
-      <div className="flex flex-col items-center gap-1 mb-2">
-        <h1 className="text-3xl font-bold text-white tracking-wider">SNAKE</h1>
-        <GameUI score={state.score} highScore={state.highScore} />
+      {/* Header */}
+      <div className="flex flex-col items-center gap-1 w-full max-w-[500px]">
+        <div className="flex items-center justify-between w-full px-2">
+          <h1 className="text-3xl font-bold text-white tracking-wider">SNAKE</h1>
+
+          {/* Wrap mode toggle — only visible in IDLE */}
+          {state.status === "IDLE" && (
+            <button
+              onClick={() => setMode(state.mode === "classic" ? "wrap" : "classic")}
+              className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                state.mode === "wrap"
+                  ? "border-[#22c55e] text-[#22c55e] bg-[#22c55e]/10"
+                  : "border-gray-600 text-gray-400 hover:border-gray-400"
+              }`}
+            >
+              <span
+                className={`w-7 h-4 rounded-full relative transition-colors ${
+                  state.mode === "wrap" ? "bg-[#22c55e]" : "bg-gray-600"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${
+                    state.mode === "wrap" ? "translate-x-3.5" : "translate-x-0.5"
+                  }`}
+                />
+              </span>
+              Wrap
+            </button>
+          )}
+
+          {/* Mode badge during play */}
+          {state.status !== "IDLE" && (
+            <span className="text-xs text-gray-500 px-2 py-1 rounded border border-gray-700">
+              {state.mode === "wrap" ? "Wrap" : "Classic"}
+            </span>
+          )}
+        </div>
+
+        <GameUI
+          score={state.score}
+          highScore={state.highScore}
+          highScoreWrap={state.highScoreWrap}
+          mode={state.mode}
+        />
       </div>
 
+      {/* Game board */}
       <div className="relative w-full max-w-[500px]">
         <GameBoard ref={boardRef} state={state} />
 
@@ -33,11 +75,10 @@ export default function Home() {
           <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-lg z-10">
             <div className="flex flex-col items-center gap-4 p-8">
               <h2 className="text-4xl font-bold text-[#22c55e]">SNAKE</h2>
-              {state.highScore > 0 && (
-                <p className="text-gray-400 text-sm">
-                  Best: <span className="text-[#22c55e]">{state.highScore}</span>
-                </p>
-              )}
+              <div className="flex gap-6 text-sm text-gray-400">
+                <span>Classic best: <span className="text-white">{state.highScore}</span></span>
+                <span>Wrap best: <span className="text-white">{state.highScoreWrap}</span></span>
+              </div>
               <button
                 onClick={start}
                 className="px-8 py-3 bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold rounded-lg transition-colors text-lg"
@@ -54,7 +95,7 @@ export default function Home() {
         {state.status === "GAME_OVER" && (
           <GameOver
             score={state.score}
-            highScore={state.highScore}
+            highScore={state.mode === "wrap" ? state.highScoreWrap : state.highScore}
             onRestart={restart}
           />
         )}
@@ -69,7 +110,9 @@ export default function Home() {
       />
 
       <p className="text-xs text-gray-600 mt-2">Space to start / pause</p>
-      <span className="fixed bottom-2 right-3 text-[10px] text-gray-700 select-none">v{pkg.version}</span>
+      <span className="fixed bottom-2 right-3 text-[10px] text-gray-700 select-none">
+        v{pkg.version}
+      </span>
     </main>
   );
 }

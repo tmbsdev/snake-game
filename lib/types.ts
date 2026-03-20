@@ -7,6 +7,8 @@ export type Position = {
 
 export type GameStatus = "IDLE" | "PLAYING" | "PAUSED" | "GAME_OVER";
 
+export type GameMode = "classic" | "wrap"; // classic = wall kills, wrap = pass through
+
 export type GameState = {
   snake: Position[];
   food: Position;
@@ -14,8 +16,10 @@ export type GameState = {
   nextDirection: Direction;
   inputQueue: Direction[];
   status: GameStatus;
+  mode: GameMode;
   score: number;
-  highScore: number;
+  highScore: number;      // classic mode best
+  highScoreWrap: number;  // wrap mode best
   gridSize: number;
   tickInterval: number;
 };
@@ -27,4 +31,5 @@ export type GameAction =
   | { type: "PAUSE" }
   | { type: "RESUME" }
   | { type: "RESTART" }
-  | { type: "SET_HIGH_SCORE"; highScore: number };
+  | { type: "SET_MODE"; mode: GameMode }
+  | { type: "SET_HIGH_SCORE"; highScore: number; highScoreWrap: number };

@@ -49,6 +49,13 @@ export function checkCollision(head: Position, gridSize: number): boolean {
   return head.x < 0 || head.x >= gridSize || head.y < 0 || head.y >= gridSize;
 }
 
+export function wrapPosition(head: Position, gridSize: number): Position {
+  return {
+    x: ((head.x % gridSize) + gridSize) % gridSize,
+    y: ((head.y % gridSize) + gridSize) % gridSize,
+  };
+}
+
 export function checkSelfCollision(snake: Position[]): boolean {
   const head = snake[0];
   return snake.slice(1).some((p) => p.x === head.x && p.y === head.y);
