@@ -17,7 +17,8 @@ export default function Home() {
 
   return (
     <main
-      className="flex flex-col items-center justify-center min-h-screen p-4 gap-2"
+      className="flex flex-col items-center justify-center p-4 gap-2"
+      style={{ minHeight: "100svh" }}
       onPointerDown={unlockAudio}
     >
       <TouchTrail boardRef={boardRef} />
@@ -70,7 +71,7 @@ export default function Home() {
       </div>
 
       {/* Game board */}
-      <div className="relative w-full max-w-[500px]">
+      <div className="relative w-full max-w-[500px] max-h-[calc(100svh-180px)]" style={{aspectRatio:"1/1"}}>
         <GameBoard ref={boardRef} state={state} />
 
         {state.status === "IDLE" && (
