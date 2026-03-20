@@ -37,13 +37,13 @@ export default function Home() {
               }`}
             >
               <span
-                className={`w-7 h-4 rounded-full relative transition-colors ${
+                className={`inline-flex items-center w-8 h-4 rounded-full relative transition-colors flex-shrink-0 ${
                   state.mode === "wrap" ? "bg-[#22c55e]" : "bg-gray-600"
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${
-                    state.mode === "wrap" ? "translate-x-3.5" : "translate-x-0.5"
+                  className={`absolute w-3 h-3 rounded-full bg-white transition-transform ${
+                    state.mode === "wrap" ? "translate-x-[18px]" : "translate-x-[2px]"
                   }`}
                 />
               </span>
