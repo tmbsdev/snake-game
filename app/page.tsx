@@ -6,18 +6,20 @@ import { GameBoard } from "@/components/GameBoard";
 import { GameUI } from "@/components/GameUI";
 import { GameOver } from "@/components/GameOver";
 import { GameControls } from "@/components/GameControls";
+import { TouchTrail } from "@/components/TouchTrail";
 
 export default function Home() {
   const boardRef = useRef<HTMLDivElement>(null);
   const { state, start, pause, resume, restart } = useSnakeGame(boardRef);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold text-white mb-2 tracking-wider">
-        SNAKE
-      </h1>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 gap-2">
+      <TouchTrail />
 
-      <GameUI score={state.score} highScore={state.highScore} />
+      <div className="flex flex-col items-center gap-1 mb-2">
+        <h1 className="text-3xl font-bold text-white tracking-wider">SNAKE</h1>
+        <GameUI score={state.score} highScore={state.highScore} />
+      </div>
 
       <div className="relative w-full max-w-[500px]">
         <GameBoard ref={boardRef} state={state} />
@@ -61,7 +63,7 @@ export default function Home() {
         onRestart={restart}
       />
 
-      <p className="text-xs text-gray-600 mt-4">Space to start / pause</p>
+      <p className="text-xs text-gray-600 mt-2">Space to start / pause</p>
     </main>
   );
 }
