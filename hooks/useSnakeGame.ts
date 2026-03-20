@@ -1,5 +1,6 @@
 import { useReducer, useCallback, useEffect, useRef } from "react";
 import { GameState, GameAction, Direction } from "@/lib/types";
+import { playEat, playMilestone, playGameOver } from "@/lib/sounds";
 import {
   GRID_SIZE,
   TICK_INTERVAL,
@@ -58,6 +59,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (checkCollision(newSnake[0], state.gridSize) || checkSelfCollision(newSnake)) {
         const newHighScore = Math.max(state.score, state.highScore);
+        setTimeout(() => playGameOver(), 0);
         return {
           ...state,
           direction,
@@ -69,6 +71,15 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       const newScore = eatsFood ? state.score + SCORE_PER_FOOD : state.score;
       const newFood = eatsFood ? generateFood(newSnake, state.gridSize) : state.food;
+
+      // Trigger sounds as side effects (outside reducer — scheduled via ref)
+      if (eatsFood) {
+        if (newScore > 0 && newScore % 100 === 0) {
+          setTimeout(() => playMilestone(), 0);
+        } else {
+          setTimeout(() => playEat(), 0);
+        }
+      }
 
       return {
         ...state,

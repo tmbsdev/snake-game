@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 gap-2">
-      <TouchTrail />
+      <TouchTrail boardRef={boardRef} />
 
       <div className="flex flex-col items-center gap-1 mb-2">
         <h1 className="text-3xl font-bold text-white tracking-wider">SNAKE</h1>
