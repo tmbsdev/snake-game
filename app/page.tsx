@@ -8,6 +8,7 @@ import { GameOver } from "@/components/GameOver";
 import { GameControls } from "@/components/GameControls";
 import { TouchTrail } from "@/components/TouchTrail";
 import { unlockAudio } from "@/lib/sounds";
+import pkg from "@/package.json";
 
 export default function Home() {
   const boardRef = useRef<HTMLDivElement>(null);
@@ -68,6 +69,7 @@ export default function Home() {
       />
 
       <p className="text-xs text-gray-600 mt-2">Space to start / pause</p>
+      <span className="fixed bottom-2 right-3 text-[10px] text-gray-700 select-none">v{pkg.version}</span>
     </main>
   );
 }

@@ -1,71 +1,120 @@
-// Web Audio API — no dependencies, works everywhere
-// iOS Safari requires AudioContext to be created AND resumed after a user gesture
+// Web Audio API — no npm deps needed
+// iOS Safari: AudioContext must be created + resumed inside a user gesture handler
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
   if (typeof window === "undefined") return null;
-  if (!audioCtx) {
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    audioCtx = new AudioContextClass();
-  }
-  // iOS Safari suspends AudioContext until user gesture — resume it
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
-  return audioCtx;
-}
-
-// Call this on first user interaction (touch/click) to unlock audio on iOS
-export function unlockAudio() {
-  const ctx = getCtx();
-  if (ctx && ctx.state === "suspended") {
-    ctx.resume();
+  try {
+    if (!audioCtx) {
+      const Ctor =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      audioCtx = new Ctor();
+    }
+    return audioCtx;
+  } catch {
+    return null;
   }
 }
 
-function beep(frequency: number, duration: number, type: OscillatorType = "square", volume = 0.15) {
+export function unlockAudio(): void {
   const ctx = getCtx();
   if (!ctx) return;
-
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
-
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
-
-  gainNode.gain.setValueAtTime(volume, ctx.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-
-  oscillator.start(ctx.currentTime);
-  oscillator.stop(ctx.currentTime + duration);
+  if (ctx.state === "suspended") {
+    ctx.resume().catch(() => {});
+  }
+  // Play a silent buffer to fully unlock on iOS
+  try {
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+  } catch {
+    // ignore
+  }
 }
 
-// Normal eat: short bip
-export function playEat() {
-  beep(440, 0.08, "square", 0.12);
-}
-
-// Milestone (10x): atari fanfare
-export function playMilestone() {
+function beep(
+  frequency: number,
+  duration: number,
+  type: OscillatorType = "square",
+  volume = 0.14
+): void {
   const ctx = getCtx();
   if (!ctx) return;
+  if (ctx.state === "suspended") return; // not unlocked yet, skip
 
-  const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+    gain.gain.setValueAtTime(volume, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch {
+    // ignore
+  }
+}
+
+export function playEat(): void {
+  beep(520, 0.07, "square", 0.13);
+}
+
+export function playMilestone(): void {
+  // Ascending 4-note fanfare — schedule via AudioContext time, not setTimeout
+  const ctx = getCtx();
+  if (!ctx || ctx.state === "suspended") return;
+  const notes = [523, 659, 784, 1047];
+  const step = 0.09;
   notes.forEach((freq, i) => {
-    setTimeout(() => beep(freq, 0.12, "square", 0.15), i * 80);
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "square";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * step);
+      gain.gain.setValueAtTime(0.14, ctx.currentTime + i * step);
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        ctx.currentTime + i * step + 0.12
+      );
+      osc.start(ctx.currentTime + i * step);
+      osc.stop(ctx.currentTime + i * step + 0.12);
+    } catch {
+      // ignore
+    }
   });
 }
 
-// Game over
-export function playGameOver() {
+export function playGameOver(): void {
   const ctx = getCtx();
-  if (!ctx) return;
-
+  if (!ctx || ctx.state === "suspended") return;
   const notes = [330, 277, 247, 220];
+  const step = 0.11;
   notes.forEach((freq, i) => {
-    setTimeout(() => beep(freq, 0.18, "sawtooth", 0.12), i * 100);
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * step);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime + i * step);
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        ctx.currentTime + i * step + 0.18
+      );
+      osc.start(ctx.currentTime + i * step);
+      osc.stop(ctx.currentTime + i * step + 0.18);
+    } catch {
+      // ignore
+    }
   });
 }

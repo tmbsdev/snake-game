@@ -36,7 +36,7 @@ export const GameBoard = forwardRef<HTMLDivElement, GameBoardProps>(
         }
       }
       return result;
-    }, [gridSize, snakeSet, food]);
+    }, [gridSize, snakeSet, food.x, food.y]);
 
     return (
       <div

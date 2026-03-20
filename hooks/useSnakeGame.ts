@@ -63,7 +63,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         checkSelfCollision(newSnake)
       ) {
         const newHighScore = Math.max(state.score, state.highScore);
-        setTimeout(() => playGameOver(), 0);
+        playGameOver();
         return {
           ...state,
           direction,
@@ -81,9 +81,9 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       if (eatsFood) {
         if (newScore % 100 === 0 && newScore > 0) {
-          setTimeout(() => playMilestone(), 0);
+          playMilestone();
         } else {
-          setTimeout(() => playEat(), 0);
+          playEat();
         }
       }
 
