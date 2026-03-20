@@ -52,44 +52,41 @@ export function InstallPrompt() {
   return (
     <div className="fixed inset-0 z-[10000] flex items-end justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="w-full max-w-sm bg-[#111] border border-[#2a2a2a] rounded-2xl p-6 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">🌼</span>
-          <div>
-            <p className="text-[11px] text-white font-bold tracking-wide">ANA EKRANA EKLE</p>
-            <p className="text-[9px] text-gray-400 mt-1 tracking-wide">Tam ekran deneyim için</p>
-          </div>
+        <div>
+          <p className="text-[11px] text-white font-bold tracking-wide">ADD TO HOME SCREEN</p>
+          <p className="text-[9px] text-gray-400 mt-1 tracking-wide">For a better app experience</p>
         </div>
 
         {platform === "ios" && (
-          <div className="flex flex-col gap-2 text-[9px] text-gray-300 tracking-wide">
-            <div className="flex items-center gap-2">
-              <span className="text-[#22c55e]">1</span>
-              <span>Alttaki <span className="text-white">Paylaş</span> butonuna bas <span className="text-gray-500">(□↑)</span></span>
+          <div className="flex flex-col gap-3 text-[9px] text-gray-300 tracking-wide">
+            <div className="flex items-start gap-2">
+              <span className="text-[#22c55e] flex-shrink-0">1</span>
+              <span>Tap the <span className="text-white">Share</span> button at the bottom of your browser</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#22c55e]">2</span>
-              <span><span className="text-white">&quot;Ana Ekrana Ekle&quot;</span> seçeneğine dokun</span>
+            <div className="flex items-start gap-2">
+              <span className="text-[#22c55e] flex-shrink-0">2</span>
+              <span>Scroll down and tap <span className="text-white">Add to Home Screen</span></span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#22c55e]">3</span>
-              <span>Sağ üstten <span className="text-white">Ekle</span>&apos;ye bas</span>
+            <div className="flex items-start gap-2">
+              <span className="text-[#22c55e] flex-shrink-0">3</span>
+              <span>Tap <span className="text-white">Add</span> in the top right corner</span>
             </div>
           </div>
         )}
 
         {platform === "android" && (
-          <div className="flex flex-col gap-2 text-[9px] text-gray-300 tracking-wide">
-            <div className="flex items-center gap-2">
-              <span className="text-[#22c55e]">1</span>
-              <span>Sağ üstteki <span className="text-white">⋮ menüsüne</span> bas</span>
+          <div className="flex flex-col gap-3 text-[9px] text-gray-300 tracking-wide">
+            <div className="flex items-start gap-2">
+              <span className="text-[#22c55e] flex-shrink-0">1</span>
+              <span>Tap the <span className="text-white">menu button</span> in your browser</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#22c55e]">2</span>
-              <span><span className="text-white">&quot;Ana Ekrana Ekle&quot;</span> seçeneğine dokun</span>
+            <div className="flex items-start gap-2">
+              <span className="text-[#22c55e] flex-shrink-0">2</span>
+              <span>Tap <span className="text-white">Add to Home Screen</span></span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#22c55e]">3</span>
-              <span><span className="text-white">Ekle</span>&apos;ye bas</span>
+            <div className="flex items-start gap-2">
+              <span className="text-[#22c55e] flex-shrink-0">3</span>
+              <span>Tap <span className="text-white">Add</span> to confirm</span>
             </div>
           </div>
         )}
@@ -99,13 +96,13 @@ export function InstallPrompt() {
             onClick={dismiss}
             className="flex-1 py-2.5 bg-[#22c55e] hover:bg-[#16a34a] text-black font-bold rounded-lg text-[9px] tracking-widest transition-colors"
           >
-            ANLADIM
+            GOT IT
           </button>
           <button
             onClick={dismiss}
             className="px-4 py-2.5 border border-gray-600 text-gray-400 hover:text-white rounded-lg text-[9px] tracking-wide transition-colors"
           >
-            KAPAT
+            LATER
           </button>
         </div>
       </div>
