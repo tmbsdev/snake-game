@@ -7,13 +7,17 @@ import { GameUI } from "@/components/GameUI";
 import { GameOver } from "@/components/GameOver";
 import { GameControls } from "@/components/GameControls";
 import { TouchTrail } from "@/components/TouchTrail";
+import { unlockAudio } from "@/lib/sounds";
 
 export default function Home() {
   const boardRef = useRef<HTMLDivElement>(null);
   const { state, start, pause, resume, restart } = useSnakeGame(boardRef);
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4 gap-2">
+    <main
+      className="flex flex-col items-center justify-center min-h-screen p-4 gap-2"
+      onPointerDown={unlockAudio}
+    >
       <TouchTrail boardRef={boardRef} />
 
       <div className="flex flex-col items-center gap-1 mb-2">

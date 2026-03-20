@@ -1,12 +1,26 @@
 // Web Audio API — no dependencies, works everywhere
+// iOS Safari requires AudioContext to be created AND resumed after a user gesture
 let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
   if (typeof window === "undefined") return null;
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    audioCtx = new AudioContextClass();
+  }
+  // iOS Safari suspends AudioContext until user gesture — resume it
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
   }
   return audioCtx;
+}
+
+// Call this on first user interaction (touch/click) to unlock audio on iOS
+export function unlockAudio() {
+  const ctx = getCtx();
+  if (ctx && ctx.state === "suspended") {
+    ctx.resume();
+  }
 }
 
 function beep(frequency: number, duration: number, type: OscillatorType = "square", volume = 0.15) {
