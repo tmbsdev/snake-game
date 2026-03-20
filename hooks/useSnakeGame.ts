@@ -1,6 +1,6 @@
 import { useReducer, useCallback, useEffect, useRef } from "react";
 import { GameState, GameAction, Direction } from "@/lib/types";
-import { playEat, playMilestone, playGameOver } from "@/lib/sounds";
+import { playEat, playMilestone, playGameOver, unlockAudio } from "@/lib/sounds";
 import {
   GRID_SIZE,
   TICK_INTERVAL,
@@ -52,12 +52,16 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
       const head = state.snake[0];
       const nextHead = getNextHeadForDirection(head, direction);
-      const eatsFood = nextHead.x === state.food.x && nextHead.y === state.food.y;
+      const eatsFood =
+        nextHead.x === state.food.x && nextHead.y === state.food.y;
       const newSnake = eatsFood
         ? growSnake(state.snake, direction)
         : moveSnake(state.snake, direction);
 
-      if (checkCollision(newSnake[0], state.gridSize) || checkSelfCollision(newSnake)) {
+      if (
+        checkCollision(newSnake[0], state.gridSize) ||
+        checkSelfCollision(newSnake)
+      ) {
         const newHighScore = Math.max(state.score, state.highScore);
         setTimeout(() => playGameOver(), 0);
         return {
@@ -70,11 +74,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       const newScore = eatsFood ? state.score + SCORE_PER_FOOD : state.score;
-      const newFood = eatsFood ? generateFood(newSnake, state.gridSize) : state.food;
+      // Generate new food only after eating — must differ from current food
+      const newFood = eatsFood
+        ? generateFood(newSnake, state.gridSize)
+        : state.food;
 
-      // Trigger sounds as side effects (outside reducer — scheduled via ref)
       if (eatsFood) {
-        if (newScore > 0 && newScore % 100 === 0) {
+        if (newScore % 100 === 0 && newScore > 0) {
           setTimeout(() => playMilestone(), 0);
         } else {
           setTimeout(() => playEat(), 0);
@@ -96,13 +102,15 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       if (state.status !== "PLAYING") return state;
 
       const { direction } = action;
-      // Determine the effective current direction (last queued or current)
       const effectiveDir =
         state.inputQueue.length > 0
           ? state.inputQueue[state.inputQueue.length - 1]
           : state.direction;
 
-      if (isOppositeDirection(effectiveDir, direction) || effectiveDir === direction) {
+      if (
+        isOppositeDirection(effectiveDir, direction) ||
+        effectiveDir === direction
+      ) {
         return state;
       }
 
@@ -118,7 +126,12 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
     case "START":
       if (state.status !== "IDLE") return state;
-      return { ...state, status: "PLAYING" };
+      // Re-generate food on start to ensure randomness after hydration
+      return {
+        ...state,
+        food: generateFood(state.snake, state.gridSize),
+        status: "PLAYING",
+      };
 
     case "PAUSE":
       if (state.status !== "PLAYING") return state;
@@ -130,7 +143,11 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 
     case "RESTART": {
       const newState = createInitialState(state.highScore);
-      return { ...newState, status: "PLAYING" };
+      return {
+        ...newState,
+        food: generateFood(newState.snake, newState.gridSize),
+        status: "PLAYING",
+      };
     }
 
     case "SET_HIGH_SCORE":
@@ -200,6 +217,17 @@ export function useSnakeGame(boardRef: React.RefObject<HTMLElement | null>) {
 
   useKeyboard(handleDirection, handleSpaceBar);
   useSwipe(handleDirection, boardRef);
+
+  // Unlock audio on first interaction anywhere on the page (iOS Safari)
+  useEffect(() => {
+    const handler = () => unlockAudio();
+    window.addEventListener("touchstart", handler, { once: true, passive: true });
+    window.addEventListener("mousedown", handler, { once: true });
+    return () => {
+      window.removeEventListener("touchstart", handler);
+      window.removeEventListener("mousedown", handler);
+    };
+  }, []);
 
   const start = useCallback(() => dispatch({ type: "START" }), []);
   const pause = useCallback(() => dispatch({ type: "PAUSE" }), []);
